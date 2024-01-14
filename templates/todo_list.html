@@ -22,17 +22,30 @@
             justify-content: space-between;
             align-items: center;
         }
+        .title-container {
+            flex: 1; /* Take up remaining space */
+            max-width: 60%; /* Limit the maximum width */
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis; /* Display ellipsis for overflow */
+        }
         button {
             background: none;
             border: none;
             cursor: pointer;
-            color: #3498db;
             margin-left: 10px;
             display: flex;
             align-items: center;
         }
         button:hover {
             text-decoration: underline;
+        }
+        .complete-button {
+            display: flex;
+            align-items: center;
+        }
+        .complete-button i {
+            margin-right: 5px;
         }
         a.add-message {
             background-color: #3498db;
@@ -49,27 +62,37 @@
         s {
             color: #888;
         }
+        .date {
+            color: #888;
+            margin-left: 10px;
+        }
+        .completed {
+            background-color: #f2f2f2; /* Background color for completed tasks */
+        }
     </style>
 </head>
 <body>
     <h1>Message Inbox</h1>
     <ul>
         {% for todo in todos %}
-            <li>
+            <li {% if todo.completed %}class="completed"{% endif %}>
                 {% if todo.completed %}
-                    <s>{{ todo.title }}</s>
+                    <s class="title-container">{{ todo.title }}</s>
+                    <span class="date">{{ todo.created_at|date:"j M Y g:iA" }}</span>
+                    <div class="complete-button">
+                        <button onclick="location.href='{% url 'toggle_complete' todo.id %}'">
+                            <i class="fas fa-check-circle" style="color: green;"></i>
+                        </button>
+                    </div>
                 {% else %}
-                    {{ todo.title }}
+                    <div class="title-container">{{ todo.title }}</div>
+                    <span class="date">{{ todo.created_at|date:"j M Y g:iA" }}</span>
+                    <div class="complete-button">
+                        <button onclick="location.href='{% url 'toggle_complete' todo.id %}'">
+                            <i class="far fa-circle" style="color: grey;"></i>
+                        </button>
+                    </div>
                 {% endif %}
-                <button onclick="location.href='{% url 'toggle_complete' todo.id %}'">
-                    {% if todo.completed %}
-                        <i class="fas fa-check-circle" style="color: green;"></i>
-                        <span>Mark as Incomplete</span>
-                    {% else %}
-                        <i class="far fa-circle" style="color: grey;"></i>
-                        <span>Mark as Complete</span>
-                    {% endif %}
-                </button>
             </li>
         {% empty %}
             <li>No messages found.</li>
